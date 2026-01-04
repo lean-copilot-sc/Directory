@@ -27,25 +27,25 @@ export default function OwnerListingsPage() {
                 <main className="container mx-auto px-4 py-10">
                     <div className="flex flex-col md:flex-row justify-between items-end mb-10 border-b border-border pb-6">
                         <div>
-                            <h1 className="text-3xl font-serif text-white tracking-wide">My Listings</h1>
-                            <p className="text-muted mt-2 text-sm">Manage your properties and directory entries.</p>
+                            <h1 className="text-3xl font-serif text-white tracking-wide">{title}</h1>
+                            <p className="text-muted mt-2 text-sm">{subtitle}</p>
                         </div>
                         <div className="flex gap-2 mt-4 md:mt-0">
-                            <ExportImport records={myRecords} onImport={importRecords} />
+                            <ExportImport records={displayRecords} onImport={importRecords} />
                             <Button asChild>
                                 <Link href="/admin/new">Add New Listing</Link>
                             </Button>
                         </div>
                     </div>
 
-                    {myRecords.length === 0 ? (
+                    {displayRecords.length === 0 ? (
                         <div className="text-center py-20 bg-surface/20 rounded-lg border border-border border-dashed">
-                            <p className="text-muted mb-4">You don't have any listings yet.</p>
-                            <Button variant="outline" asChild><Link href="/admin/new">Create Your First Listing</Link></Button>
+                            <p className="text-muted mb-4">No listings found.</p>
+                            <Button variant="outline" asChild><Link href="/admin/new">Create First Listing</Link></Button>
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {myRecords.map(record => (
+                            {displayRecords.map(record => (
                                 <motion.div key={record.id} layout initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                                     <Card className="h-full bg-surface border-border hover:border-primary/30 transition-all group">
                                         <div className="relative h-48 overflow-hidden rounded-t-lg">
