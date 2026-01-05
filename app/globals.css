@@ -1,20 +1,45 @@
 @import "tailwindcss";
 
 :root {
-  /* Midnight & Champagne Palette */
+  /* Default: Midnight & Champagne Palette (Dark) */
   --background: #050505;
   --surface: #0f0f13;
   --surface-highlight: #1a1a20;
   --border: #272730;
-  
-  --primary: #D4AF37; /* Champagne Gold */
+
+  --primary: #D4AF37;
+  --primary-rgb: 212, 175, 55;
+  /* Champagne Gold */
   --primary-hover: #E5C158;
   --primary-foreground: #050505;
-  
+
   --foreground: #EAEAEA;
   --muted: #A1A1AA;
-  
+
   --radius: 0.5rem;
+}
+
+[data-theme='light'] {
+  /* Alabaster & Deep Bronze Palette (Light) */
+  --background: #F8F8F9;
+  --surface: #FFFFFF;
+  --surface-highlight: #F0F0F2;
+  --border: #E2E2E7;
+
+  --primary: #785A1D;
+  /* Richer Golden Bronze */
+  --primary-rgb: 120, 90, 29;
+  --primary-hover: #5A4315;
+  --primary-foreground: #FFFFFF;
+
+  --foreground: #09090B;
+  --muted: #52525B;
+
+  color-scheme: light;
+}
+
+:root:not([data-theme='light']) {
+  color-scheme: dark;
 }
 
 @theme inline {
@@ -22,18 +47,18 @@
   --color-surface: var(--surface);
   --color-surface-highlight: var(--surface-highlight);
   --color-border: var(--border);
-  
+
   --color-primary: var(--primary);
   --color-primary-hover: var(--primary-hover);
   --color-primary-foreground: var(--primary-foreground);
-  
+
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
-  
+
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
-  
+
   --font-sans: var(--font-geist-sans);
 }
 
@@ -42,19 +67,27 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+* {
+  transition: border-color 0.3s ease;
 }
 
 /* Custom Scrollbar for Luxury Feel */
 ::-webkit-scrollbar {
   width: 8px;
 }
+
 ::-webkit-scrollbar-track {
   background: var(--background);
 }
+
 ::-webkit-scrollbar-thumb {
   background: var(--surface-highlight);
   border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: var(--border);
 }

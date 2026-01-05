@@ -43,30 +43,29 @@ const states = ["Gujarat", "Maharashtra", "Rajasthan"];
 
 const generateRecords = (): DirectoryRecord[] => {
     const records: DirectoryRecord[] = [];
-
-    // 1-40 Premium
-    // 41-80 Executive
-    // 81-100 Boutique
+    const amenitiesList = ["Valet", "Wifi", "Pool", "Gym", "Parking"];
 
     for (let i = 1; i <= 100; i++) {
         let category: 'Premium' | 'Executive' | 'Boutique' = 'Boutique';
         if (i <= 40) category = 'Premium';
         else if (i <= 80) category = 'Executive';
 
-        // Deterministic state based on index to ensure we have distribution
         const state = states[i % states.length];
 
+        // Deterministic Amenities based on index
+        const amenities = amenitiesList.filter((_, index) => (i + index) % 3 === 0);
+
         records.push({
-            id: uuidv4(),
-            ownerId: `owner-${Math.floor(Math.random() * 10)}`,
+            id: `record-${i}`, // Deterministic ID
+            ownerId: `owner-${(i % 5) + 1}`, // Deterministic Owner
             category,
             name: `${category} Listing ${i}`,
-            address: `${Math.floor(Math.random() * 999)} Luxury Blvd, ${state}`,
+            address: `${100 + i} Luxury Blvd, ${state}`,
             image: `https://placehold.co/600x400/1a1a1a/D4AF37?text=${category}+${i}`,
             data: {
-                "State_01": [state], // Checkbox implies array
-                "Rating_01": parseFloat((Math.random() * 2 + 3).toFixed(1)), // 3.0 to 5.0
-                "Amenities_01": ["Valet", "Wifi", "Pool"].filter(() => Math.random() > 0.5)
+                "State_01": [state],
+                "Rating_01": parseFloat((4.0 + (i % 10) / 10).toFixed(1)), // Deterministic Rating 4.0-4.9
+                "Amenities_01": amenities
             }
         });
     }

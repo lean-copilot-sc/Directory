@@ -5,7 +5,7 @@ import { Field, DirectoryRecord, SystemConfig } from "@/lib/types"
 import { Button } from "./ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "./ui/card"
 import { motion, AnimatePresence } from "framer-motion"
-import { MapPin, X, ArrowRight } from "lucide-react"
+import { MapPin, X, ArrowRight, Filter, ChevronDown } from "lucide-react"
 import Link from "next/link"
 
 interface DirectoryListingProps {
@@ -20,6 +20,7 @@ export function DirectoryListing({ initialRecords, schema, config }: DirectoryLi
     const [selectedFilters, setSelectedFilters] = React.useState<Record<string, string[]>>({})
     const [sortField, setSortField] = React.useState<string | null>(null)
     const [sortDirection, setSortDirection] = React.useState<'asc' | 'desc'>('desc')
+    const [isFilterDrawerOpen, setIsFilterDrawerOpen] = React.useState(false);
 
     // Use user-selected layout if available, otherwise use default
     const activeLayout = userLayout;
@@ -125,75 +126,113 @@ export function DirectoryListing({ initialRecords, schema, config }: DirectoryLi
         }
     };
 
-    return (
-        <div className="flex flex-col lg:flex-row min-h-screen">
-            {/* Sidebar */}
-            <aside className="w-full lg:w-80 border-r border-border bg-surface p-6 space-y-8 sticky top-20 h-fit overflow-y-auto hidden lg:block">
-                <div className="flex items-center justify-between">
-                    <h2 className="text-lg font-serif tracking-widest text-primary">FILTERS</h2>
-                    {Object.keys(selectedFilters).length > 0 && (
-                        <Button variant="ghost" size="sm" onClick={() => setSelectedFilters({})} className="text-muted hover:text-white h-auto p-0 hover:bg-transparent">
-                            <X className="w-4 h-4 mr-1" /> Clear
-                        </Button>
-                    )}
+    const FilterSidebar = ({ isMobile = false }) => (
+        <div className={`space-y-8 ${isMobile ? 'pt-20 px-6 pb-12' : ''}`}>
+            <div className="flex items-center justify-between">
+                <h2 className="text-lg font-serif tracking-widest text-primary font-bold italic">FILTERS</h2>
+                {Object.keys(selectedFilters).length > 0 && (
+                    <Button variant="ghost" size="sm" onClick={() => setSelectedFilters({})} className="text-muted hover:text-primary h-auto p-0 hover:bg-transparent text-[10px] uppercase tracking-tighter">
+                        <X className="w-3 h-3 mr-1" /> Clear All
+                    </Button>
+                )}
+            </div>
+
+            {navigableFields.map(field => (
+                <div key={field.id} className="space-y-4">
+                    <h3 className="text-[10px] font-bold uppercase text-muted tracking-[0.2em] border-b border-border pb-2">{field.name}</h3>
+                    <div className="space-y-1">
+                        {field.availableValues?.map(opt => {
+                            const isSelected = selectedFilters[field.id]?.includes(opt);
+                            return (
+                                <div
+                                    key={opt}
+                                    onClick={() => toggleFilter(field.id, opt)}
+                                    className={`
+                                        cursor-pointer px-3 py-2 rounded-sm text-sm transition-all flex items-center justify-between group
+                                        ${isSelected ? 'bg-primary/10 text-primary border-l-2 border-primary font-bold shadow-[inset_4px_0_10px_rgba(var(--primary-rgb),0.05)]' : 'text-foreground/60 hover:text-foreground hover:bg-surface-highlight font-medium'}
+                                    `}
+                                >
+                                    <span className="group-hover:translate-x-1 transition-transform">{opt}</span>
+                                    {isSelected && <motion.div layoutId={`dot-${field.id}${isMobile ? '-mob' : ''}`} className="w-1.5 h-1.5 rounded-full bg-primary" />}
+                                </div>
+                            )
+                        })}
+                    </div>
                 </div>
+            ))}
 
-                {/* Navigable Fields */}
-                {navigableFields.map(field => (
-                    <div key={field.id} className="space-y-4">
-                        <h3 className="text-xs font-bold uppercase text-muted tracking-widest border-b border-border pb-2">{field.name}</h3>
-                        <div className="space-y-1">
-                            {field.availableValues?.map(opt => {
-                                const isSelected = selectedFilters[field.id]?.includes(opt);
-                                return (
-                                    <div
-                                        key={opt}
-                                        onClick={() => toggleFilter(field.id, opt)}
-                                        className={`
-                                    cursor-pointer px-3 py-2 rounded-sm text-sm transition-all flex items-center justify-between group
-                                    ${isSelected ? 'bg-primary/10 text-primary border-l-2 border-primary' : 'text-foreground/60 hover:text-foreground hover:bg-surface-highlight'}
-                                `}
-                                    >
-                                        <span className="group-hover:translate-x-1 transition-transform">{opt}</span>
-                                        {isSelected && <motion.div layoutId={`dot-${field.id}`} className="w-1.5 h-1.5 rounded-full bg-primary" />}
-                                    </div>
-                                )
-                            })}
-                        </div>
+            {filterableFields.map(field => (
+                <div key={field.id} className="space-y-4">
+                    <h3 className="text-[10px] font-bold uppercase text-muted tracking-[0.2em] border-b border-border pb-2">{field.name}</h3>
+                    <div className="space-y-1">
+                        {field.availableValues?.map(opt => {
+                            const isSelected = selectedFilters[field.id]?.includes(opt);
+                            return (
+                                <div
+                                    key={opt}
+                                    onClick={() => toggleFilter(field.id, opt)}
+                                    className={`
+                                        cursor-pointer px-3 py-2 rounded-sm text-sm transition-all flex items-center justify-between group
+                                        ${isSelected ? 'bg-primary/10 text-primary border-l-2 border-primary font-bold' : 'text-foreground/60 hover:text-foreground hover:bg-surface-highlight font-medium'}
+                                    `}
+                                >
+                                    <span className="group-hover:translate-x-1 transition-transform">{opt}</span>
+                                    {isSelected && <motion.div layoutId={`filter-dot-${field.id}${isMobile ? '-mob' : ''}`} className="w-1.5 h-1.5 rounded-full bg-primary" />}
+                                </div>
+                            )
+                        })}
                     </div>
-                ))}
+                </div>
+            ))}
+        </div>
+    );
 
-                {/* Filterable Fields (not navigable) */}
-                {filterableFields.map(field => (
-                    <div key={field.id} className="space-y-4">
-                        <h3 className="text-xs font-bold uppercase text-muted tracking-widest border-b border-border pb-2">{field.name}</h3>
-                        <div className="space-y-1">
-                            {field.availableValues?.map(opt => {
-                                const isSelected = selectedFilters[field.id]?.includes(opt);
-                                return (
-                                    <div
-                                        key={opt}
-                                        onClick={() => toggleFilter(field.id, opt)}
-                                        className={`
-                                    cursor-pointer px-3 py-2 rounded-sm text-sm transition-all flex items-center justify-between group
-                                    ${isSelected ? 'bg-primary/10 text-primary border-l-2 border-primary' : 'text-foreground/60 hover:text-foreground hover:bg-surface-highlight'}
-                                `}
-                                    >
-                                        <span className="group-hover:translate-x-1 transition-transform">{opt}</span>
-                                        {isSelected && <motion.div layoutId={`dot-${field.id}-filter`} className="w-1.5 h-1.5 rounded-full bg-primary" />}
-                                    </div>
-                                )
-                            })}
-                        </div>
-                    </div>
-                ))}
+    return (
+        <div className="flex flex-col lg:flex-row min-h-screen relative">
+            {/* Desktop Sidebar */}
+            <aside className="hidden lg:block w-80 border-r border-border bg-surface p-6 sticky top-20 h-[calc(100vh-80px)] overflow-y-auto">
+                <FilterSidebar />
             </aside>
+
+            {/* Mobile Filter Drawer */}
+            <AnimatePresence>
+                {isFilterDrawerOpen && (
+                    <>
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setIsFilterDrawerOpen(false)}
+                            className="fixed inset-0 bg-black/60 backdrop-blur-md z-[100] lg:hidden"
+                        />
+                        <motion.div
+                            initial={{ x: "-100%" }}
+                            animate={{ x: 0 }}
+                            exit={{ x: "-100%" }}
+                            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                            className="fixed left-0 top-0 bottom-0 w-[300px] bg-surface border-r border-border z-[101] lg:hidden overflow-y-auto shadow-2xl"
+                        >
+                            <div className="absolute top-6 right-6">
+                                <Button variant="ghost" size="sm" onClick={() => setIsFilterDrawerOpen(false)}>
+                                    <X className="w-5 h-5 text-primary" />
+                                </Button>
+                            </div>
+                            <FilterSidebar isMobile />
+                            <div className="sticky bottom-0 left-0 right-0 p-6 bg-surface border-t border-border">
+                                <Button className="w-full shadow-[0_0_20px_rgba(212,175,55,0.2)]" onClick={() => setIsFilterDrawerOpen(false)}>
+                                    Show {filteredRecords.length} Results
+                                </Button>
+                            </div>
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
 
             {/* Main Content */}
             <main className="flex-1 p-6 lg:p-10">
                 <div className="mb-8 flex flex-col md:flex-row justify-between items-end md:items-center gap-4">
                     <div>
-                        <h1 className="text-4xl font-serif text-white tracking-wide mb-2">
+                        <h1 className="text-4xl font-serif text-foreground tracking-wide mb-2">
                             {config?.heroText || "Exclusive Listings"}
                         </h1>
                         <p className="text-muted text-sm uppercase tracking-widest">Showing {filteredRecords.length} curated results</p>
@@ -201,6 +240,18 @@ export function DirectoryListing({ initialRecords, schema, config }: DirectoryLi
 
                     {/* Dynamic Sort Controls & Layout Toggle */}
                     <div className="flex gap-4 flex-wrap items-center">
+                        {/* Mobile Filter Button */}
+                        <div className="lg:hidden w-full mb-4">
+                            <Button
+                                variant="outline"
+                                className="w-full gap-2 border-primary/20 bg-surface/50"
+                                onClick={() => setIsFilterDrawerOpen(true)}
+                            >
+                                <Filter className="w-4 h-4 text-primary" />
+                                Filters {Object.keys(selectedFilters).length > 0 && `(${Object.keys(selectedFilters).length})`}
+                            </Button>
+                        </div>
+
                         {/* Layout Toggle */}
                         <div className="flex gap-2 border-r border-border pr-4">
                             <Button
@@ -278,7 +329,7 @@ export function DirectoryListing({ initialRecords, schema, config }: DirectoryLi
                             >
                                 <Link href={`/record/${record.id}`} className="block h-full">
                                     <Card className={`
-                                        hover:shadow-[0_0_20px_rgba(212,175,55,0.1)] hover:border-primary/40 group cursor-pointer overflow-hidden bg-surface flex 
+                                        hover:shadow-[0_10px_30px_rgba(212,175,55,0.15)] shadow-sm border-border/60 hover:border-primary/40 group cursor-pointer overflow-hidden bg-surface flex 
                                         ${activeLayout === 'List' ? 'flex-row h-48' : 'flex-col h-full'}
                                     `}>
                                         <div className={`
@@ -287,7 +338,7 @@ export function DirectoryListing({ initialRecords, schema, config }: DirectoryLi
                                     `}>
                                             <img src={record.image} alt={record.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                                             <div className="absolute top-0 inset-x-0 h-20 bg-gradient-to-b from-black/80 to-transparent p-4 flex justify-between items-start">
-                                                <span className="text-primary text-[10px] font-bold uppercase tracking-[0.2em] bg-black/50 backdrop-blur-md px-2 py-1 rounded-sm border border-primary/20">
+                                                <span className="text-[#D4AF37] text-[10px] font-bold uppercase tracking-[0.2em] bg-black/50 backdrop-blur-md px-2 py-1 rounded-sm border border-[#D4AF37]/30">
                                                     {record.category}
                                                 </span>
                                             </div>
