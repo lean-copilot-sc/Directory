@@ -32,15 +32,28 @@ export interface DirectoryRecord {
 
 export type Role = 'Admin' | 'Owner' | 'User';
 
+export interface User {
+  id: string;
+  email: string;
+  password?: string; // For mock auth
+  role: Role;
+  name: string;
+  isActive: boolean;
+  avatar?: string;
+}
+
 export interface SystemConfig {
   settingId: string;
   logo: string;
-  heroImage: string; // New
-  heroText: string;  // New
+  heroImage: string;
+  heroText: string;
   primaryColor: string;
-  accentColor: string;
+  colorSecondary: string;
+  colorBackground: string;
   defaultLayout: 'Grid' | 'List';
-  anonymousAccess: boolean; // New
+  anonymousAccess: boolean;
+  // Enhanced Branding
+  borderRadius?: string;
 }
 
 export interface Schema {

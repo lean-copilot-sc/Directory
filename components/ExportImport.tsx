@@ -4,6 +4,7 @@ import * as React from "react"
 import { Button } from "./ui/button"
 import { Download, Upload } from "lucide-react"
 import { DirectoryRecord } from "@/lib/types"
+import { useDirectory } from "@/lib/store"
 
 interface ExportImportProps {
     records: DirectoryRecord[];
@@ -12,6 +13,7 @@ interface ExportImportProps {
 
 export function ExportImport({ records, onImport }: ExportImportProps) {
     const fileInputRef = React.useRef<HTMLInputElement>(null);
+    const { showAlert } = useDirectory();
 
     const handleExport = () => {
         const dataStr = JSON.stringify(records, null, 2);
@@ -40,12 +42,24 @@ export function ExportImport({ records, onImport }: ExportImportProps) {
                 const importedRecords = JSON.parse(event.target?.result as string);
                 if (Array.isArray(importedRecords)) {
                     onImport(importedRecords);
-                    alert(`Successfully imported ${importedRecords.length} records!`);
+                    showAlert(
+                        "Import Accomplished",
+                        `Successfully synchronized ${importedRecords.length} records into your local directory database.`,
+                        "success"
+                    );
                 } else {
-                    alert('Invalid file format. Expected an array of records.');
+                    showAlert(
+                        "Structure Mismatch",
+                        "The provided file does not match the required Luxe Directory schema. Please verify the JSON source.",
+                        "danger"
+                    );
                 }
             } catch (error) {
-                alert('Error parsing JSON file. Please ensure it\'s a valid JSON file.');
+                showAlert(
+                    "Parsing Interrupted",
+                    "The system encountered an error decyphering the JSON file. Ensure the file is not corrupted.",
+                    "danger"
+                );
             }
         };
         reader.readAsText(file);
@@ -58,18 +72,16 @@ export function ExportImport({ records, onImport }: ExportImportProps) {
         <div className="flex gap-2">
             <Button
                 variant="outline"
-                size="sm"
                 onClick={handleExport}
-                className="gap-2"
+                className="w-44 gap-2"
             >
                 <Download className="w-4 h-4" />
                 Export ({records.length})
             </Button>
             <Button
                 variant="outline"
-                size="sm"
                 onClick={handleImportClick}
-                className="gap-2"
+                className="w-44 gap-2"
             >
                 <Upload className="w-4 h-4" />
                 Import

@@ -204,6 +204,60 @@ export function DynamicForm({ schema, initialData = {}, onSubmit }: DynamicFormP
 
             case 'number':
                 return <input type="number" name={field.id} defaultValue={value} className={baseClass} placeholder="0.00" step="0.1" />
+
+            case 'file':
+                return (
+                    <div className="relative group">
+                        <input
+                            type="file"
+                            name={field.id}
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                        />
+                        <div className={`${baseClass} flex items-center justify-between group-hover:border-primary transition-all`}>
+                            <span className="text-muted/60 text-sm">Choose architectural asset or document...</span>
+                            <div className="p-1 px-3 bg-surface border border-border rounded text-[10px] uppercase tracking-widest text-primary font-bold">
+                                Browse
+                            </div>
+                        </div>
+                    </div>
+                );
+
+            case 'address':
+                return (
+                    <div className="relative">
+                        <input
+                            type="text"
+                            name={field.id}
+                            defaultValue={value}
+                            className={`${baseClass} pl-12`}
+                            placeholder="Enter physical coordinates or address..."
+                        />
+                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-primary opacity-50">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                );
+
+            case 'rich-text':
+                return (
+                    <div className="space-y-2">
+                        <div className="flex gap-1 mb-1">
+                            {['B', 'I', 'U', 'S'].map(b => (
+                                <div key={b} className="w-6 h-6 flex items-center justify-center border border-border text-[10px] text-muted hover:text-primary hover:border-primary cursor-pointer transition-all rounded-[1px] font-bold">{b}</div>
+                            ))}
+                        </div>
+                        <textarea
+                            name={field.id}
+                            defaultValue={value}
+                            className={`${baseClass} min-h-[160px] font-sans text-sm leading-relaxed`}
+                            placeholder="Describe with sophistication..."
+                        />
+                    </div>
+                )
+
             default:
                 return <input type="text" name={field.id} defaultValue={value} className={baseClass} placeholder={`Enter ${field.name}...`} />
         }
@@ -232,7 +286,7 @@ export function DynamicForm({ schema, initialData = {}, onSubmit }: DynamicFormP
                         ))}
                     </div>
                     <div className="text-center">
-                        <h3 className="text-lg font-serif text-white">
+                        <h3 className="text-lg font-serif text-foreground">
                             {currentPage.name !== 'default' ? currentPage.name : `Step ${currentPageIndex + 1}`}
                         </h3>
                         <p className="text-xs text-muted mt-1">Page {currentPageIndex + 1} of {pages.length}</p>
@@ -249,6 +303,10 @@ export function DynamicForm({ schema, initialData = {}, onSubmit }: DynamicFormP
                         <input name="name" defaultValue={initialData.name} className="w-full bg-surface-highlight border border-border rounded-sm px-4 py-3 text-foreground focus:outline-none focus:border-primary transition-colors" placeholder="Record Name" />
                     </div>
                     <div className="space-y-2">
+                        <label className="text-xs uppercase tracking-wider text-muted">Image URL</label>
+                        <input name="image" defaultValue={initialData.image} className="w-full bg-surface-highlight border border-border rounded-sm px-4 py-3 text-foreground focus:outline-none focus:border-primary transition-colors" placeholder="https://..." />
+                    </div>
+                    <div className="md:col-span-2 space-y-2">
                         <label className="text-xs uppercase tracking-wider text-muted">Address</label>
                         <input name="address" defaultValue={initialData.address} className="w-full bg-surface-highlight border border-border rounded-sm px-4 py-3 text-foreground focus:outline-none focus:border-primary transition-colors" placeholder="Full Address" />
                     </div>
@@ -296,7 +354,7 @@ export function DynamicForm({ schema, initialData = {}, onSubmit }: DynamicFormP
                         <ChevronLeft className="w-4 h-4" /> Previous
                     </Button>
                 ) : (
-                    <Button type="button" variant="ghost">Cancel</Button>
+                    <Button type="button" variant="ghost" onClick={() => window.history.back()}>Cancel</Button>
                 )}
 
                 {isMultiPage && !isLastPage ? (

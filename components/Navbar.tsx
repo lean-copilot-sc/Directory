@@ -8,22 +8,14 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Menu, X, ChevronRight, Settings, Database, PlusCircle, LayoutList, User as UserIcon, Sun, Moon } from "lucide-react"
 
 export function Navbar() {
-    const { config, user, switchUser, theme, toggleTheme } = useDirectory();
+    const { config, user, users, switchUser, theme, toggleTheme, logout } = useDirectory();
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+
+    if (!user) return null; // Or show a compact login button nav
 
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
-    const ThemeToggle = () => (
-        <Button
-            variant="ghost"
-            size="sm"
-            onClick={toggleTheme}
-            className="p-2 text-primary hover:bg-primary/10 rounded-full transition-colors flex items-center justify-center border border-primary/20"
-            aria-label="Toggle Theme"
-        >
-            {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
-        </Button>
-    );
+
 
     const NavLinks = () => (
         <>
@@ -38,6 +30,11 @@ export function Navbar() {
                     <Link href="/admin/schema" onClick={() => setIsMenuOpen(false)}>
                         <Button variant="ghost" size="sm" className="w-full md:w-auto justify-start border border-transparent md:border-none">
                             <Database className="w-4 h-4 mr-2 md:hidden" /> Schema
+                        </Button>
+                    </Link>
+                    <Link href="/admin/users" onClick={() => setIsMenuOpen(false)}>
+                        <Button variant="ghost" size="sm" className="w-full md:w-auto justify-start border border-transparent md:border-none">
+                            <UserIcon className="w-4 h-4 mr-2 md:hidden" /> Users
                         </Button>
                     </Link>
                 </>
@@ -92,7 +89,6 @@ export function Navbar() {
                         <div className="hidden md:flex items-center gap-4">
                             {/* Role Switcher (Desktop) */}
                             <div className="flex items-center gap-2 border-r border-border pr-4 mr-2">
-                                <ThemeToggle />
                                 <span className="text-[10px] uppercase text-muted tracking-wider ml-4">View:</span>
                                 <select
                                     value={user.role}
@@ -110,7 +106,6 @@ export function Navbar() {
 
                     {/* Mobile Toggle Button */}
                     <div className="flex items-center gap-2 md:hidden">
-                        <ThemeToggle />
                         <button
                             onClick={toggleMenu}
                             className="p-2 text-primary z-[1001] hover:bg-white/10 rounded-full transition-colors"
@@ -135,7 +130,6 @@ export function Navbar() {
                     >
                         {/* Explicit Close Button Inside Overlay */}
                         <div className="absolute top-5 right-4 z-[1010] flex items-center gap-4">
-                            <ThemeToggle />
                             <button
                                 onClick={() => setIsMenuOpen(false)}
                                 className="p-2 text-primary hover:bg-primary/10 rounded-full transition-colors outline-none"
@@ -156,14 +150,11 @@ export function Navbar() {
                                         <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20">
                                             <UserIcon className="w-7 h-7 text-primary" />
                                         </div>
-                                        <div className="flex flex-col">
+                                        <div className="flex-1">
                                             <span className="text-[10px] uppercase text-primary tracking-[0.3em] font-bold">Currently Viewing As</span>
-                                            <span className="text-xl font-serif text-foreground">{user.role}</span>
+                                            <span className="text-xl font-serif text-foreground block">{user.name}</span>
+                                            <span className="text-xs text-muted font-medium opacity-60 uppercase tracking-widest leading-none">{user.role}</span>
                                         </div>
-                                    </div>
-                                    <div className="flex flex-col items-end gap-1">
-                                        <span className="text-[8px] uppercase text-muted tracking-widest">Theme</span>
-                                        <ThemeToggle />
                                     </div>
                                 </div>
 
@@ -175,7 +166,7 @@ export function Navbar() {
                                                 key={role}
                                                 onClick={() => { switchUser(role as any); setIsMenuOpen(false); }}
                                                 className={`flex items-center justify-between px-4 py-3 rounded-xl border transition-all duration-300 ${user.role === role
-                                                    ? 'bg-primary text-primary-foreground border-primary shadow-[0_0_20px_rgba(212,175,55,0.2)]'
+                                                    ? 'bg-primary text-primary-foreground border-primary shadow-[0_0_20px_rgba(var(--primary-rgb),0.2)]'
                                                     : 'bg-surface-highlight/30 text-muted border-border hover:border-primary/40'
                                                     }`}
                                             >
@@ -232,6 +223,13 @@ export function Navbar() {
                                         </button>
                                     )}
                                 </div>
+                                <Button
+                                    variant="outline"
+                                    className="w-full mt-8 text-red-500 border-red-500/20 hover:bg-red-500/10"
+                                    onClick={() => { logout(); setIsMenuOpen(false); window.location.href = '/login'; }}
+                                >
+                                    Log Out
+                                </Button>
                             </div>
 
                             {/* Footer Sign-off */}

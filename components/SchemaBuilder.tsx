@@ -52,7 +52,7 @@ export function SchemaBuilder({ initialSchema, onSave }: SchemaBuilderProps) {
             {/* Field List */}
             <div className="lg:col-span-1 space-y-4">
                 <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-serif text-white">Form Fields</h2>
+                    <h2 className="text-xl font-serif text-foreground">Form Fields</h2>
                     <Button onClick={addField} size="sm" className="gap-2">
                         <Plus className="w-4 h-4" /> Add
                     </Button>
@@ -77,7 +77,7 @@ export function SchemaBuilder({ initialSchema, onSave }: SchemaBuilderProps) {
                             onClick={() => setActiveFieldId(field.id)}
                             whileDrag={{
                                 scale: 1.05,
-                                boxShadow: "0 10px 30px rgba(212, 175, 55, 0.3)",
+                                boxShadow: "0 10px 30px rgba(var(--primary-rgb), 0.3)",
                                 zIndex: 999
                             }}
                         >
@@ -299,7 +299,7 @@ function Toggle({ label, desc, checked, onChange }: { label: string, desc: strin
         >
             <div className="flex items-center justify-between mb-1">
                 <span className={`font-medium text-sm ${checked ? 'text-primary' : 'text-foreground'}`}>{label}</span>
-                <div className={`w-3 h-3 rounded-full transition-colors ${checked ? 'bg-primary shadow-[0_0_8px_#D4AF37]' : 'bg-border'}`} />
+                <div className={`w-3 h-3 rounded-full transition-colors ${checked ? 'bg-primary shadow-[0_0_8px_rgba(var(--primary-rgb),0.6)]' : 'bg-border'}`} />
             </div>
             <p className="text-[10px] text-muted">{desc}</p>
         </button>

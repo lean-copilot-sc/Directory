@@ -6,27 +6,30 @@ import { v4 as uuidv4 } from 'uuid';
 import { useRouter } from 'next/navigation';
 
 export default function NewRecordPage() {
-    const { schema, addRecord } = useDirectory();
+    const { schema, addRecord, showAlert } = useDirectory();
     const router = useRouter();
 
     const handleSubmit = (data: any) => {
         // Extract core fields that are outside the dynamic data
-        const { name, address, ...dynamicData } = data;
+        const { name, address, image, ...dynamicData } = data;
 
-        // In a real app we'd handle image upload. using placeholder for now.
         const newRecord = {
             id: uuidv4(),
-            ownerId: 'owner-1', // Set to owner-1 to match My Listings demo
-            category: 'Boutique' as const, // Default or add a selector
+            ownerId: 'owner-1',
+            category: 'Boutique' as const,
             name: name,
             address: address,
-            image: "https://placehold.co/600x400/1a1a1a/D4AF37?text=New+Listing",
+            image: image || "https://placehold.co/600x400/1a1a1a/D4AF37?text=New+Listing",
             data: dynamicData
         };
 
         addRecord(newRecord);
-        alert("Record Created Successfully!");
-        router.push('/');
+        showAlert(
+            "Listing Created",
+            `${name} has been successfully added to the Luxe Directory.`,
+            "success",
+            () => router.push('/')
+        );
     };
 
     return (
@@ -36,7 +39,7 @@ export default function NewRecordPage() {
                 <Navbar />
                 <main className="container mx-auto px-4 py-10">
                     <div className="max-w-3xl mx-auto mb-10 border-l-4 border-primary pl-6">
-                        <h1 className="text-4xl font-serif text-white tracking-wide">Add New Listing</h1>
+                        <h1 className="text-4xl font-serif text-foreground tracking-wide">Add New Listing</h1>
                         <p className="text-muted mt-2 text-lg">Create a new entry in the directory using the configured schema.</p>
                     </div>
                     <DynamicForm schema={schema} onSubmit={handleSubmit} />

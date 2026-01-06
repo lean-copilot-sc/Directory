@@ -10,7 +10,7 @@ import { Eye } from "lucide-react";
 import Link from "next/link";
 
 export default function EditRecordPage() {
-    const { schema, records, updateRecord } = useDirectory();
+    const { schema, records, updateRecord, showAlert } = useDirectory();
     const router = useRouter();
     const params = useParams();
     const [record, setRecord] = useState<DirectoryRecord | undefined>(undefined);
@@ -20,9 +20,6 @@ export default function EditRecordPage() {
             const found = records.find(r => r.id === params.id);
             if (found) {
                 setRecord(found);
-            } else {
-                // Handle not found
-                // router.push('/admin/listings');
             }
         }
     }, [params.id, records]);
@@ -30,18 +27,23 @@ export default function EditRecordPage() {
     const handleSubmit = (data: any) => {
         if (!record) return;
 
-        const { name, address, ...dynamicData } = data;
+        const { name, address, image, ...dynamicData } = data;
 
         const updatedRecord: DirectoryRecord = {
             ...record,
             name: name,
             address: address,
+            image: image,
             data: dynamicData
         };
 
         updateRecord(updatedRecord);
-        alert("Record Updated Successfully!");
-        router.back();
+        showAlert(
+            "Listing Updated",
+            `The details for ${name} have been synchronized.`,
+            "success",
+            () => router.back()
+        );
     };
 
     if (!record) return <div className="p-10 text-center text-muted">Loading record...</div>;
@@ -50,6 +52,7 @@ export default function EditRecordPage() {
     const initialData = {
         name: record.name,
         address: record.address,
+        image: record.image,
         ...record.data
     };
 
@@ -61,7 +64,7 @@ export default function EditRecordPage() {
                 <main className="container mx-auto px-4 py-10">
                     <div className="max-w-3xl mx-auto mb-10 pb-6 border-b border-border flex justify-between items-center">
                         <div>
-                            <h1 className="text-3xl font-serif text-white tracking-wide">Edit Listing</h1>
+                            <h1 className="text-3xl font-serif text-foreground tracking-wide">Edit Listing</h1>
                             <p className="text-muted mt-1 text-sm">Update the details for <span className="text-primary">{record.name}</span>.</p>
                         </div>
                         <Link href={`/record/${record.id}`}>

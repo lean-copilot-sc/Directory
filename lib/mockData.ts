@@ -1,16 +1,47 @@
-import { v4 as uuidv4 } from 'uuid';
-import { DirectoryRecord, Field, SystemConfig } from './types';
+import { DirectoryRecord, Field, SystemConfig, User } from './types';
 
 export const systemConfig: SystemConfig = {
     settingId: "Global",
     logo: "https://placehold.co/200x50/D4AF37/000000?text=LUXE",
     heroImage: "https://toolset.com/wp-content/uploads/2020/05/toolset-homepage-hero-section-example.png",
     heroText: "Exclusive Listings",
-    primaryColor: "#1A1A1A",
-    accentColor: "#D4AF37",
+    primaryColor: "#D4AF37",
+    colorSecondary: "#0F0F13",
+    colorBackground: "#050505",
     defaultLayout: "Grid",
-    anonymousAccess: true
+    anonymousAccess: true,
+    borderRadius: "0.5rem"
 };
+
+export const mockUsers: User[] = [
+    {
+        id: 'admin-1',
+        email: 'admin@luxedir.com',
+        password: 'Admin@Luxe2026',
+        role: 'Admin',
+        name: 'Super Admin',
+        isActive: true,
+        avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Admin'
+    },
+    {
+        id: 'owner-1',
+        email: 'owner@luxedir.com',
+        password: 'Owner@Luxe2026',
+        role: 'Owner',
+        name: 'John Luxury',
+        isActive: true,
+        avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Owner'
+    },
+    {
+        id: 'user-1',
+        email: 'guest@luxedir.com',
+        password: 'User@Luxe2026',
+        role: 'User',
+        name: 'Guest User',
+        isActive: true,
+        avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Guest'
+    }
+];
 
 export const formSchema: Field[] = [
     {
@@ -57,7 +88,7 @@ const generateRecords = (): DirectoryRecord[] => {
 
         records.push({
             id: `record-${i}`, // Deterministic ID
-            ownerId: `owner-${(i % 5) + 1}`, // Deterministic Owner
+            ownerId: i % 2 === 0 ? 'owner-1' : 'admin-1', // Deterministic Owner allocation
             category,
             name: `${category} Listing ${i}`,
             address: `${100 + i} Luxury Blvd, ${state}`,

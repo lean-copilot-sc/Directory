@@ -21,7 +21,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         const baseStyles = "inline-flex items-center justify-center rounded-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary disabled:pointer-events-none disabled:opacity-50 cursor-pointer";
 
         const variants: Record<ButtonVariant, string> = {
-            primary: "bg-primary text-primary-foreground hover:bg-primary-hover shadow-[0_0_10px_rgba(212,175,55,0.2)]",
+            primary: "bg-primary text-primary-foreground hover:bg-primary-hover shadow-[0_0_10px_rgba(var(--primary-rgb),0.2)]",
             outline: "border border-primary text-primary hover:bg-primary/10",
             ghost: "text-primary hover:bg-primary/5"
         }

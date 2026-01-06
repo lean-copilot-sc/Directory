@@ -20,7 +20,7 @@ export default function RecordDetailPage() {
     if (!record) {
         return (
             <div className="min-h-screen bg-background flex flex-col items-center justify-center text-center p-4">
-                <h1 className="text-3xl font-serif text-white mb-2">Record Not Found</h1>
+                <h1 className="text-3xl font-serif text-foreground mb-2">Record Not Found</h1>
                 <p className="text-muted max-w-md mb-8">
                     The listing you are looking for might have been removed or is temporarily unavailable.
                 </p>
@@ -81,19 +81,29 @@ export default function RecordDetailPage() {
                             <motion.div
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="relative aspect-[16/9] rounded-lg overflow-hidden border border-border group"
+                                className="relative aspect-[4/3] md:aspect-[16/9] rounded-lg overflow-hidden border border-border group shadow-2xl"
                             >
                                 <img
                                     src={record.image}
                                     alt={record.name}
-                                    className="w-full h-full object-cover"
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                                <div className="absolute bottom-8 left-8">
-                                    <span className="text-primary text-xs font-bold uppercase tracking-[0.3em] bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-sm border border-primary/20 mb-4 inline-block">
+                                {/* Overlay Gradients */}
+                                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+                                <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-black/60 to-transparent" />
+
+                                {/* Category Tag at Top */}
+                                <div className="absolute top-0 left-0 p-6 md:p-10">
+                                    <span className="text-primary text-[10px] md:text-xs font-bold uppercase tracking-[0.3em] bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-sm border border-primary/20 inline-block shadow-lg">
                                         {record.category}
                                     </span>
-                                    <h1 className="text-4xl md:text-6xl font-serif text-white tracking-wide">{record.name}</h1>
+                                </div>
+
+                                {/* Title at Bottom */}
+                                <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10">
+                                    <h1 className="text-2xl md:text-5xl lg:text-6xl font-serif text-white tracking-wide leading-tight max-w-2xl drop-shadow-lg">
+                                        {record.name}
+                                    </h1>
                                 </div>
                             </motion.div>
 
